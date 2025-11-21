@@ -47,7 +47,6 @@ public class UserController {
         return ResponseEntity.created(uri).body(userDto);
     }
 
-    // Controller
     @PostMapping("/bulk")
     public ResponseEntity<BulkUserResponse> createUsers(
             @RequestBody BulkUserRequest request) {

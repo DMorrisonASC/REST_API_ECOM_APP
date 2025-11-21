@@ -59,12 +59,12 @@ public class ProductService {
         if (productRepository.findByName(request.getName()).isPresent()) {
             throw new ProductAlreadyExistsException("Product name must be unique");
         }
-//        Fetch the Category entity
+
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Category not found"));
 
         Product newProduct = productMapper.toEntity(request);
-        newProduct.setCategory(category); // Set the actual Category object and let Mapper handle it
+        newProduct.setCategory(category);
         Product savedProduct = productRepository.save(newProduct);
         return productMapper.toDto(savedProduct);
     }

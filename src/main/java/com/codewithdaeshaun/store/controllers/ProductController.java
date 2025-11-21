@@ -25,7 +25,7 @@ public class ProductController {
         return productService.getAllProducts(filters);
     }
 
-    @GetMapping("/{id}")  // Different path: /products/{id}
+    @GetMapping("/{id}")
     public ResponseEntity<ProductDto> getProduct(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProduct(id));
     }
@@ -57,7 +57,7 @@ public class ProductController {
             @PathVariable Long id)
     {
         ProductDto deletedProduct = productService.deleteProduct(id);
-        return ResponseEntity.ok(deletedProduct);  // 200 OK with body
+        return ResponseEntity.ok(deletedProduct);
     }
 
 }
