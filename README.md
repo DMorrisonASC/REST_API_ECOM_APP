@@ -47,6 +47,7 @@ The application follows a seven-layer architecture:
 - `GET /users` - Get all users (with sorting)
 - `GET /users/{id}` - Get user by ID
 - `POST /users` - Create new user
+- `POST /users/bulk` - Create a bacth of users
 - `PUT /users/{id}` - Update user profile
 - `DELETE /users/{id}` - Delete user
 - `POST /users/{id}/change-password` - Change user password
