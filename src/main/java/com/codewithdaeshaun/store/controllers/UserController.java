@@ -1,22 +1,17 @@
 package com.codewithdaeshaun.store.controllers;
 
-import com.codewithdaeshaun.store.dtos.ChangePasswordRequest;
-import com.codewithdaeshaun.store.dtos.RegisterUserRequest;
-import com.codewithdaeshaun.store.dtos.UpdateUserRequest;
-import com.codewithdaeshaun.store.dtos.UserDto;
-import com.codewithdaeshaun.store.entities.User;
+import com.codewithdaeshaun.store.dtos.*;
 import com.codewithdaeshaun.store.mappers.UserMapper;
 import com.codewithdaeshaun.store.repositories.UserRepository;
 import com.codewithdaeshaun.store.services.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -25,32 +20,20 @@ public class UserController {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final UserService userService; // Inject UserService
+    private final UserService userService; // Inject my UserService
 
     @GetMapping
     public Iterable<UserDto> getAllUsers(
             @RequestParam(required = false, defaultValue = "", name = "sort")
             String sort
     ) {
-        if (Set.of("name", "email").contains(sort) == false) {
-            sort = "name";
-        }
 
-        return userRepository.findAll(Sort.by(sort))
-                .stream()
-                .map(userMapper::toDto)
-                .toList();
+        return userService.getAllUsers(sort);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
-        var user = userRepository.findById(id).orElse(null);
-
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(userMapper.toDto(user));
+        return ResponseEntity.ok(userService.getUser(id));
     }
 
     @PostMapping
@@ -64,32 +47,26 @@ public class UserController {
         return ResponseEntity.created(uri).body(userDto);
     }
 
+    // Controller
+    @PostMapping("/bulk")
+    public ResponseEntity<BulkUserResponse> createUsers(
+            @RequestBody BulkUserRequest request) {
+        BulkUserResponse response = userService.createUsers(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(
             @PathVariable Long id,
             @RequestBody UpdateUserRequest request) {
 
-        var user = userRepository.findById(id).orElse(null);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
 
-        userMapper.update(request, user);
-        userRepository.save(user);
-
-        return ResponseEntity.ok(userMapper.toDto(user));
+        return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        var user = userRepository.findById(id).orElse(null);
-
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        userRepository.delete(user);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<UserDto> deleteUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.deleteUser(id));
     }
 
     @PostMapping("/{id}/change-password")

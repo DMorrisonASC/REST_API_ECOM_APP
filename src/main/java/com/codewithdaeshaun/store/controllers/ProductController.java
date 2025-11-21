@@ -18,8 +18,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @AllArgsConstructor
 @RequestMapping("/products")
 public class ProductController {
-    private final ProductRepository productRepository;
-    private final ProductMapper productMapper;
     private final ProductService productService;
 
     @GetMapping
